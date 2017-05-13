@@ -1,0 +1,5 @@
+.ruby-version
+.rbenv-gemsets
+.gems
+.bundle
+vendor/*
