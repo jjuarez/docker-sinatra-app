@@ -7,6 +7,9 @@ LABEL "version"="1.0" \
 
 ARG APP_HOME
 ENV APP_HOME ${APP_HOME:-/app}
+ARG APP_PORT
+ENV APP_PORT ${APP_PORT:-9292}
+
 ADD Gemfile* $APP_HOME/
 RUN apk --update add --virtual build-dependencies ruby-dev build-base && \
     gem install bundler --no-ri --no-rdoc && \
@@ -16,7 +19,7 @@ RUN apk --update add --virtual build-dependencies ruby-dev build-base && \
 ADD app.rb config.ru $APP_HOME/
 RUN chown -R nobody:nogroup $APP_HOME
 USER nobody
-EXPOSE 9292
 
+EXPOSE $APP_PORT
 WORKDIR $APP_HOME
 
