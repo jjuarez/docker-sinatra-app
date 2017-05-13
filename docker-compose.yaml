@@ -1,18 +1,15 @@
-version: '2'
+version: "2.0"
+
 services:
   web:
     image: sinatra-app:latest
-    environment:
-      - APP_HOME=/app
-      - RACK_ENV=production
-      - PORT=9292
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - REDIS_DB=0
-    command: bundle exec puma -p ${PORT}
+    env_file: .env
+    depends_on:
+      - redis
     ports:
       - "19292:9292"
     links:
       - redis:redis
+    command: bundle exec puma -p $APP_PORT
   redis:
     image: "redis:alpine"
