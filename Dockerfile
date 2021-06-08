@@ -1,25 +1,25 @@
-FROM ruby:2.4.1-alpine
-MAINTAINER Javier Juarez <javier.juarez@gmail.com>
+ARG IMAGE_TAG=2.7.3-alpine3.13@sha256:19598fc1ef09911a1015c03be08f1b9c881035ea279216153e804d65812b9f31 
+FROM ruby:${IMAGE_TAG} AS builder
 
-LABEL "version"="1.0" \
-      "service"="sinatra" \
-      "description"="A minimal Sinatra application"
+ARG APP_HOME=/app
 
-ARG APP_HOME
-ENV APP_HOME ${APP_HOME:-/app}
-ARG APP_PORT
-ENV APP_PORT ${APP_PORT:-9292}
+RUN apk --no-cache add --virtual build-dependencies build-base ruby-dev
 
-ADD Gemfile* $APP_HOME/
-RUN apk --update add --virtual build-dependencies ruby-dev build-base && \
-    gem install bundler --no-ri --no-rdoc && \
-    cd $APP_HOME; bundle install --without development test -j 4 && \
-    apk del build-dependencies build-base
+WORKDIR ${APP_HOME}
+COPY Gemfile Gemfile.lock ./
+RUN bundle install
 
-ADD app.rb config.ru $APP_HOME/
-RUN chown -R nobody:nogroup $APP_HOME
-USER nobody
 
-EXPOSE $APP_PORT
-WORKDIR $APP_HOME
+FROM ruby:${IMAGE_TAG} AS runtime
+LABEL \
+  org.label-schema.name="A Dockerized sinatra application" \
+  org.label-schema.description="A minimal Sinatra docker application" \
+  org.label-schema.url="https://github.com/jjuarez/docker-sinatra-app"
 
+COPY --from=builder /usr/local/bundle /usr/local/bundle
+
+WORKDIR ${APP_HOME}
+COPY . ./
+
+EXPOSE 4567/TCP
+CMD [ "bundle", "exec", "rackup", "--host", "0.0.0.0", "-p", "4567" ]
