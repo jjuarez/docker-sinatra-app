@@ -17,11 +17,15 @@ class Application < Sinatra::Base
   end
 
   error do
-    { message: "Boom!" }.to_json
+    { status: "ok", message: "Boom!" }.to_json
+  end
+
+  get '/' do
+    { status: "error", message: "Try the endpoint '/counter'" }.to_json
   end
 
   get '/counter' do
-    { counter: REDIS.incr(:hits) }.to_json
+    { status: "ok", counter: REDIS.incr(:hits) }.to_json
   end
 end
 
