@@ -3,7 +3,7 @@ As you will seen this is only a dockerized Sinatra application example
 
 
 
-## Getting Started
+## Getting Started
 
 Just use the makefile, it will guide you through the operations
 
