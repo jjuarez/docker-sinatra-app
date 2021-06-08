@@ -1,15 +1,14 @@
-version: "2.0"
-
+---
+version: "3.6"
 services:
   web:
-    image: sinatra-app:latest
+    image: jjuarez/docker-sinatra-app:latest
     env_file: .env
     depends_on:
       - redis
     ports:
-      - "19292:9292"
-    links:
-      - redis:redis
-    command: bundle exec puma -p $APP_PORT
+      - "4567:4567"
   redis:
-    image: "redis:alpine"
+    image: "redis:6.0.8-alpine"
+    ports:
+      - "6379:6379"
